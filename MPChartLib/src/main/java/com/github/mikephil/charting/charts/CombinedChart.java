@@ -52,7 +52,7 @@ public class CombinedChart extends BarLineChartBase<CombinedData> implements Com
      * for the combined-chart are drawn
      */
     public enum DrawOrder {
-        BAR, BUBBLE, LINE, CANDLE, SCATTER
+        BAR, BUBBLE, LINE, CANDLE, SCATTER,SCATTER_CUSTOM,BAR_CUSTOM
     }
 
     public CombinedChart(Context context) {
@@ -157,6 +157,7 @@ public class CombinedChart extends BarLineChartBase<CombinedData> implements Com
             return null;
         return mData.getBubbleData();
     }
+
 
     @Override
     public boolean isDrawBarShadowEnabled() {

@@ -54,7 +54,7 @@ public abstract class BaseEntry {
      *
      * @param icon
      */
-    public void setIcon(Drawable icon) {
+        public void setIcon(Drawable icon) {
         this.mIcon = icon;
     }
 

@@ -1,14 +1,18 @@
 package com.github.mikephil.charting.renderer;
 
+import android.graphics.Bitmap;
 import android.graphics.Canvas;
 
 import com.github.mikephil.charting.animation.ChartAnimator;
+import com.github.mikephil.charting.buffer.BarBuffer;
 import com.github.mikephil.charting.charts.Chart;
 import com.github.mikephil.charting.charts.CombinedChart;
 import com.github.mikephil.charting.charts.CombinedChart.DrawOrder;
+import com.github.mikephil.charting.data.BarData;
 import com.github.mikephil.charting.data.ChartData;
 import com.github.mikephil.charting.data.CombinedData;
 import com.github.mikephil.charting.highlight.Highlight;
+import com.github.mikephil.charting.interfaces.dataprovider.BarDataProvider;
 import com.github.mikephil.charting.interfaces.dataprovider.BarLineScatterCandleBubbleDataProvider;
 import com.github.mikephil.charting.utils.ViewPortHandler;
 
@@ -34,15 +38,27 @@ public class CombinedChartRenderer extends DataRenderer {
         createRenderers();
     }
 
+    private Bitmap bitmap;
+
+    public CombinedChartRenderer(CombinedChart chart, ChartAnimator animator, ViewPortHandler viewPortHandler, Bitmap bitmap) {
+        super(animator, viewPortHandler);
+        this.bitmap = bitmap;
+        mChart = new WeakReference<Chart>(chart);
+        createRenderers();
+
+    }
+
+
     /**
      * Creates the renderers needed for this combined-renderer in the required order. Also takes the DrawOrder into
      * consideration.
      */
+
     public void createRenderers() {
 
         mRenderers.clear();
 
-        CombinedChart chart = (CombinedChart)mChart.get();
+        CombinedChart chart = (CombinedChart) mChart.get();
         if (chart == null)
             return;
 
@@ -71,6 +87,15 @@ public class CombinedChartRenderer extends DataRenderer {
                     if (chart.getScatterData() != null)
                         mRenderers.add(new ScatterChartRenderer(chart, mAnimator, mViewPortHandler));
                     break;
+                case SCATTER_CUSTOM:
+                    if (chart.getScatterData() != null)
+                        mRenderers.add(new ScatterChartRendererCustom(chart, mAnimator, mViewPortHandler, bitmap));
+                    break;
+                case BAR_CUSTOM:
+                    if (chart.getBarData() != null)
+                        mRenderers.add(new BarChartRendererCustom(chart, mAnimator, mViewPortHandler));
+                    break;
+
             }
         }
     }
@@ -115,18 +140,18 @@ public class CombinedChartRenderer extends DataRenderer {
             ChartData data = null;
 
             if (renderer instanceof BarChartRenderer)
-                data = ((BarChartRenderer)renderer).mChart.getBarData();
+                data = ((BarChartRenderer) renderer).mChart.getBarData();
             else if (renderer instanceof LineChartRenderer)
-                data = ((LineChartRenderer)renderer).mChart.getLineData();
+                data = ((LineChartRenderer) renderer).mChart.getLineData();
             else if (renderer instanceof CandleStickChartRenderer)
-                data = ((CandleStickChartRenderer)renderer).mChart.getCandleData();
+                data = ((CandleStickChartRenderer) renderer).mChart.getCandleData();
             else if (renderer instanceof ScatterChartRenderer)
-                data = ((ScatterChartRenderer)renderer).mChart.getScatterData();
+                data = ((ScatterChartRenderer) renderer).mChart.getScatterData();
             else if (renderer instanceof BubbleChartRenderer)
-                data = ((BubbleChartRenderer)renderer).mChart.getBubbleData();
+                data = ((BubbleChartRenderer) renderer).mChart.getBubbleData();
 
             int dataIndex = data == null ? -1
-                    : ((CombinedData)chart.getData()).getAllData().indexOf(data);
+                    : ((CombinedData) chart.getData()).getAllData().indexOf(data);
 
             mHighlightBuffer.clear();
 

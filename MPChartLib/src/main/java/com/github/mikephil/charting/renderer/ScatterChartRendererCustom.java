@@ -1,16 +1,22 @@
-
 package com.github.mikephil.charting.renderer;
 
+import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Paint;
 import android.graphics.drawable.Drawable;
 import android.util.Log;
 
 import com.github.mikephil.charting.animation.ChartAnimator;
+import com.github.mikephil.charting.buffer.BarBuffer;
+import com.github.mikephil.charting.data.BarData;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.ScatterData;
+import com.github.mikephil.charting.data.ScatterDto;
 import com.github.mikephil.charting.highlight.Highlight;
+import com.github.mikephil.charting.interfaces.dataprovider.BarDataProvider;
 import com.github.mikephil.charting.interfaces.dataprovider.ScatterDataProvider;
+import com.github.mikephil.charting.interfaces.datasets.IBarDataSet;
 import com.github.mikephil.charting.interfaces.datasets.IScatterDataSet;
 import com.github.mikephil.charting.renderer.scatter.IShapeRenderer;
 import com.github.mikephil.charting.utils.MPPointD;
@@ -21,13 +27,16 @@ import com.github.mikephil.charting.utils.ViewPortHandler;
 
 import java.util.List;
 
-public class ScatterChartRenderer extends LineScatterCandleRadarRenderer {
-
+public class ScatterChartRendererCustom extends LineScatterCandleRadarRenderer {
+    protected String TAG = "ScatterChartRendererCustom";
     protected ScatterDataProvider mChart;
+    protected Bitmap bitmap;
 
-    public ScatterChartRenderer(ScatterDataProvider chart, ChartAnimator animator, ViewPortHandler viewPortHandler) {
+    public ScatterChartRendererCustom(ScatterDataProvider chart, ChartAnimator animator,
+                                      ViewPortHandler viewPortHandler, Bitmap bitmap) {
         super(animator, viewPortHandler);
         mChart = chart;
+        this.bitmap = bitmap;
     }
 
     @Override
@@ -62,9 +71,9 @@ public class ScatterChartRenderer extends LineScatterCandleRadarRenderer {
             return;
         }
 
-        int max = (int)(Math.min(
-                Math.ceil((float)dataSet.getEntryCount() * mAnimator.getPhaseX()),
-                (float)dataSet.getEntryCount()));
+        int max = (int) (Math.min(
+                Math.ceil((float) dataSet.getEntryCount() * mAnimator.getPhaseX()),
+                (float) dataSet.getEntryCount()));
 
         for (int i = 0; i < max; i++) {
 
@@ -83,11 +92,45 @@ public class ScatterChartRenderer extends LineScatterCandleRadarRenderer {
                 continue;
 
             mRenderPaint.setColor(dataSet.getColor(i / 2));
-//            mRenderPaint.setColor(Color.GREEN);
-            renderer.renderShape(
-                    c, dataSet, mViewPortHandler,
-                    mPixelBuffer[0], mPixelBuffer[1],
-                    mRenderPaint);
+
+            boolean visible = false;
+            if (e instanceof ScatterDto) {
+                visible = ((ScatterDto) e).visible;
+            }
+            if (visible)
+//                renderer.renderShape(
+//                        c, dataSet, mViewPortHandler,
+//                        mPixelBuffer[0], mPixelBuffer[1],
+//                        mRenderPaint);
+//
+//            mRenderPaint.setStyle(Paint.Style.FILL);
+
+//            c.drawCircle(mPixelBuffer[0], mPixelBuffer[1] ,80, mRenderPaint);
+
+                drawImage(c, bitmap, mPixelBuffer[0], mPixelBuffer[1]);
+
+//            Log.d(TAG, "i:" + i);
+
+            Log.d(TAG, "x:" + mPixelBuffer[0]);
+            Log.d(TAG, "y:" + mPixelBuffer[1]);
+        }
+    }
+
+    private Bitmap scaleBarImage(int width) {
+//        BarBuffer buffer = mBarBuffers[0];
+//        float firstLeft = buffer.buffer[0];
+//        float firstRight = buffer.buffer[2];
+//        int firstWidth = (int) Math.ceil(firstRight - firstLeft);
+        return Bitmap.createScaledBitmap(bitmap, width, width, false);
+    }
+
+    protected void drawImage(Canvas c, Bitmap image, float x, float y) {
+        if (image != null) {
+            float w = image.getWidth();
+            x = x - w / 2f;
+
+            c.drawBitmap(image, x, y, null);
+        } else {
         }
     }
 
@@ -151,10 +194,11 @@ public class ScatterChartRenderer extends LineScatterCandleRadarRenderer {
                         Utils.drawImage(
                                 c,
                                 icon,
-                                (int)(positions[j] + iconsOffset.x),
-                                (int)(positions[j + 1] + iconsOffset.y),
+                                (int) (positions[j] + iconsOffset.x),
+                                (int) (positions[j + 1] + iconsOffset.y),
                                 icon.getIntrinsicWidth(),
-                                icon.getIntrinsicHeight());
+                                icon.getIntrinsicHeight()
+                        );
                     }
                 }
 
@@ -193,4 +237,6 @@ public class ScatterChartRenderer extends LineScatterCandleRadarRenderer {
             drawHighlightLines(c, (float) pix.x, (float) pix.y, set);
         }
     }
+
+
 }

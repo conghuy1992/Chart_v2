@@ -1,4 +1,3 @@
-
 package com.github.mikephil.charting.renderer;
 
 import android.graphics.Canvas;
@@ -23,7 +22,7 @@ import com.github.mikephil.charting.utils.ViewPortHandler;
 
 import java.util.List;
 
-public class BarChartRenderer extends BarLineScatterCandleBubbleRenderer {
+public class BarChartRendererCustom extends BarLineScatterCandleBubbleRenderer {
     private String TAG=  "BarChartRenderer";
     protected BarDataProvider mChart;
 
@@ -37,7 +36,7 @@ public class BarChartRenderer extends BarLineScatterCandleBubbleRenderer {
     protected Paint mShadowPaint;
     protected Paint mBarBorderPaint;
 
-    public BarChartRenderer(BarDataProvider chart, ChartAnimator animator,
+    public BarChartRendererCustom(BarDataProvider chart, ChartAnimator animator,
                             ViewPortHandler viewPortHandler) {
         super(animator, viewPortHandler);
         this.mChart = chart;
@@ -109,8 +108,8 @@ public class BarChartRenderer extends BarLineScatterCandleBubbleRenderer {
             float x;
 
             for (int i = 0, count = Math.min((int)(Math.ceil((float)(dataSet.getEntryCount()) * phaseX)), dataSet.getEntryCount());
-                i < count;
-                i++) {
+                 i < count;
+                 i++) {
 
                 BarEntry e = dataSet.getEntryForIndex(i);
 

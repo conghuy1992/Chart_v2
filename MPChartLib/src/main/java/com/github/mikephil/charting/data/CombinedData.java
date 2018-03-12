@@ -32,6 +32,7 @@ public class CombinedData extends BarLineScatterCandleBubbleData<IBarLineScatter
         notifyDataChanged();
     }
 
+
     public void setData(BarData data) {
         mBarData = data;
         notifyDataChanged();
@@ -51,6 +52,7 @@ public class CombinedData extends BarLineScatterCandleBubbleData<IBarLineScatter
         mBubbleData = data;
         notifyDataChanged();
     }
+
 
     @Override
     public void calcMinMax() {
@@ -110,6 +112,7 @@ public class CombinedData extends BarLineScatterCandleBubbleData<IBarLineScatter
         return mBubbleData;
     }
 
+
     public LineData getLineData() {
         return mLineData;
     }
@@ -144,6 +147,7 @@ public class CombinedData extends BarLineScatterCandleBubbleData<IBarLineScatter
             data.add(mCandleData);
         if (mBubbleData != null)
             data.add(mBubbleData);
+
 
         return data;
     }

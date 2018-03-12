@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.WindowManager;
+import android.widget.Toast;
 
 import com.github.mikephil.charting.charts.CombinedChart;
 import com.github.mikephil.charting.charts.CombinedChart.DrawOrder;
@@ -33,6 +34,8 @@ import com.github.mikephil.charting.data.ScatterData;
 import com.github.mikephil.charting.data.ScatterDataSet;
 import com.github.mikephil.charting.data.ScatterDto;
 import com.github.mikephil.charting.formatter.IAxisValueFormatter;
+import com.github.mikephil.charting.highlight.Highlight;
+import com.github.mikephil.charting.listener.OnChartValueSelectedListener;
 import com.github.mikephil.charting.renderer.CombinedChartRenderer;
 import com.github.mikephil.charting.utils.ColorTemplate;
 
@@ -48,8 +51,13 @@ public class MainActivity extends AppCompatActivity {
     }
 
     protected String[] mMonths = new String[]{
-            "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Okt", "Nov", "Dec"
+            "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec",
+//            "13","14","15","16","17","18","19","20"
     };
+
+    private void showMsg(String msg) {
+        Toast.makeText(getApplicationContext(), msg, Toast.LENGTH_SHORT).show();
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,9 +68,17 @@ public class MainActivity extends AppCompatActivity {
 
         mChart = (CombinedChart) findViewById(R.id.chart1);
 
+        mChart.setOnChartValueSelectedListener(new OnChartValueSelectedListener() {
+            @Override
+            public void onValueSelected(Entry e, Highlight h) {
+                if (e instanceof ScatterDto) showMsg("ScatterDto");
+            }
 
-        mChart.getDescription().setEnabled(false);
-        mChart.setHighlightFullBarEnabled(false);
+            @Override
+            public void onNothingSelected() {
+
+            }
+        });
 
         mChart.setBackgroundColor(Color.WHITE);
         mChart.setDrawGridBackground(false);
@@ -70,10 +86,11 @@ public class MainActivity extends AppCompatActivity {
 //        combinedChart.setDrawValueAboveBar(false);
         mChart.getXAxis().setDrawGridLines(false);
 
-//        combinedChart.getXAxis().setEnabled(false);
-//        combinedChart.getAxisLeft().setDrawAxisLine(false);
+//        mChart.getXAxis().setEnabled(false);
+//        mChart.getAxisLeft().setDrawAxisLine(false);
         mChart.getAxisRight().setDrawAxisLine(false);
         mChart.getAxisRight().setDrawLabels(false);
+
 
         // draw bars behind lines
         mChart.setDrawOrder(new DrawOrder[]{
@@ -96,9 +113,13 @@ public class MainActivity extends AppCompatActivity {
         leftAxis.setAxisMinimum(0f); // this replaces setStartAtZero(true)
 
         XAxis xAxis = mChart.getXAxis();
-        xAxis.setPosition(XAxisPosition.BOTH_SIDED);
+        xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
+
+        xAxis.setLabelCount(mMonths.length);
+
         xAxis.setAxisMinimum(0f);
         xAxis.setGranularity(1f);
+
         xAxis.setValueFormatter(new IAxisValueFormatter() {
             @Override
             public String getFormattedValue(float value, AxisBase axis) {
@@ -155,25 +176,6 @@ public class MainActivity extends AppCompatActivity {
         return d;
     }
 
-    private BarData generateBarCustomData() {
-        ArrayList<BarEntry> entries1 = new ArrayList<BarEntry>();
-        for (int index = 0; index < mMonths.length; index++)
-            entries1.add(new BarEntry(index, getRandom(15, 5), index + 2));
-
-        BarDataSet set1 = new BarDataSet(entries1, "bar custom");
-        set1.setColors(Color.RED);
-//        set1.setValueTextColor(Color.rgb(60, 220, 78));
-//        set1.setValueTextSize(10f);
-//        set1.setAxisDependency(YAxis.AxisDependency.LEFT);
-//        float barWidth = 0.45f; // x2 dataset
-        // (0.45 + 0.02) * 2 + 0.06 = 1.00 -> interval per "group"
-
-        BarData d = new BarData(set1);
-//        BarData d = new BarData(set1);
-//        d.setBarWidth(barWidth);
-
-        return d;
-    }
 
     private BarData generateBarData() {
         ArrayList<BarEntry> entries1 = new ArrayList<BarEntry>();

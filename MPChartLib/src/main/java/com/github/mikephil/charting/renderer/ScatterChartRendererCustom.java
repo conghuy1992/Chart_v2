@@ -144,9 +144,6 @@ public class ScatterChartRendererCustom extends LineScatterCandleRadarRenderer {
         int w = bitmap.getWidth();
         int h = bitmap.getHeight();
 
-        Log.d(TAG, "w1:" + w);
-        Log.d(TAG, "h1:" + h);
-
 //        1000 500
 //        500  250
 
@@ -154,13 +151,7 @@ public class ScatterChartRendererCustom extends LineScatterCandleRadarRenderer {
             float ratio = (float) width / w;
             w = width;
             h = (int) (h * ratio);
-            Log.d(TAG, "ratio:" + ratio);
-            Log.d(TAG, "w2:" + w);
-            Log.d(TAG, "h2:" + h);
         }
-
-        Log.d(TAG, "w3:" + w);
-        Log.d(TAG, "h3:" + h);
 
         return Bitmap.createScaledBitmap(bitmap, w, h, false);
 

@@ -56,6 +56,7 @@ public class ScatterChartRendererCustom extends LineScatterCandleRadarRenderer {
     }
 
     float[] mPixelBuffer = new float[2];
+    float maxWidth = 0;
 
     protected void drawDataSet(Canvas c, IScatterDataSet dataSet) {
 
@@ -74,6 +75,25 @@ public class ScatterChartRendererCustom extends LineScatterCandleRadarRenderer {
         int max = (int) (Math.min(
                 Math.ceil((float) dataSet.getEntryCount() * mAnimator.getPhaseX()),
                 (float) dataSet.getEntryCount()));
+
+        if (max > 1) {
+            Entry e = dataSet.getEntryForIndex(0);
+            mPixelBuffer[0] = e.getX();
+            trans.pointValuesToPixel(mPixelBuffer);
+            float x1 = mPixelBuffer[0];
+
+            e = dataSet.getEntryForIndex(1);
+            mPixelBuffer[0] = e.getX();
+            trans.pointValuesToPixel(mPixelBuffer);
+            float x2 = mPixelBuffer[0];
+
+            Log.d(TAG, "x1:" + x1);
+            Log.d(TAG, "x2:" + x2);
+            maxWidth = x2 - x1;
+
+        }
+//
+        Log.d(TAG, "maxWidth:" + maxWidth);
 
         for (int i = 0; i < max; i++) {
 
@@ -111,21 +131,46 @@ public class ScatterChartRendererCustom extends LineScatterCandleRadarRenderer {
 
 //            Log.d(TAG, "i:" + i);
 
-            Log.d(TAG, "x:" + mPixelBuffer[0]);
-            Log.d(TAG, "y:" + mPixelBuffer[1]);
+//            Log.d(TAG, "x:" + mPixelBuffer[0]);
+//            Log.d(TAG, "y:" + mPixelBuffer[1]);
         }
     }
 
-    private Bitmap scaleBarImage(int width) {
+    private Bitmap scaleBarImage(Bitmap bitmap, int width) {
 //        BarBuffer buffer = mBarBuffers[0];
 //        float firstLeft = buffer.buffer[0];
 //        float firstRight = buffer.buffer[2];
 //        int firstWidth = (int) Math.ceil(firstRight - firstLeft);
-        return Bitmap.createScaledBitmap(bitmap, width, width, false);
+        int w = bitmap.getWidth();
+        int h = bitmap.getHeight();
+
+        Log.d(TAG, "w1:" + w);
+        Log.d(TAG, "h1:" + h);
+
+//        1000 500
+//        500  250
+
+        if (w > width) {
+            float ratio = (float) width / w;
+            w = width;
+            h = (int) (h * ratio);
+            Log.d(TAG, "ratio:" + ratio);
+            Log.d(TAG, "w2:" + w);
+            Log.d(TAG, "h2:" + h);
+        }
+
+        Log.d(TAG, "w3:" + w);
+        Log.d(TAG, "h3:" + h);
+
+        return Bitmap.createScaledBitmap(bitmap, w, h, false);
+
+
     }
 
     protected void drawImage(Canvas c, Bitmap image, float x, float y) {
         if (image != null) {
+            if (maxWidth != 0) image = scaleBarImage(image, (int) maxWidth);
+
             float w = image.getWidth();
             x = x - w / 2f;
 

@@ -21,12 +21,13 @@ public class CustomMarkerView extends MarkerView {
     public CustomMarkerView(Context context, int layoutResource) {
         super(context, layoutResource);
         tvTitle = (TextView) findViewById(R.id.tvTitle);
+        Log.d(TAG,"CustomMarkerView");
     }
 
     @Override
     public void refreshContent(Entry e, Highlight highlight) {
-        super.refreshContent(e, highlight);
-        Log.d(TAG, "refreshContent");
+
+
         if (e instanceof BarEntry) {
             tvTitle.setText("BarEntry");
         } else if (e instanceof LineEntry) {
@@ -34,8 +35,10 @@ public class CustomMarkerView extends MarkerView {
         } else {
             tvTitle.setText("ICON");
         }
-
+        Log.d(TAG, "refreshContent");
 //        tvTitle.setText("" + e.getX());
+
+        super.refreshContent(e, highlight);
     }
 
 }

@@ -181,7 +181,6 @@ public class MainActivity extends AppCompatActivity {
 //        mChart.xAxis.axisMaximum = combinedChartData.xMax + xAxisPadding
 
         mChart.setData(data);
-
         mChart.invalidate();
 //        Bitmap starBitmap = BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher);
 //        mChart.setRenderer(new CombinedChartRenderer(mChart, mChart.getAnimator(), mChart.getViewPortHandler(), starBitmap));
@@ -238,7 +237,6 @@ public class MainActivity extends AppCompatActivity {
 //                Color.RED, Color.GREEN, Color.GRAY, Color.BLACK, Color.BLUE,Color.RED, Color.GREEN});
 
 
-
         int color[] = new int[list.size()];
         for (int i = 0; i < list.size(); i++) {
             String s = "#8bb39c";
@@ -258,8 +256,6 @@ public class MainActivity extends AppCompatActivity {
         BarData d = new BarData(set1);
 //        BarData d = new BarData(set1);
 //        d.setBarWidth(barWidth);
-
-
 
 
         return d;

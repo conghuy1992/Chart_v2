@@ -74,11 +74,9 @@ public class BarChartRenderer extends BarLineScatterCandleBubbleRenderer {
         BarData barData = mChart.getBarData();
 
         for (int i = 0; i < barData.getDataSetCount(); i++) {
-            Log.d(TAG,"i:"+i);
             IBarDataSet set = barData.getDataSetByIndex(i);
 
             if (set.isVisible()) {
-                Log.d(TAG,"barData:"+i);
                 drawDataSet(c, set, i);
             }
         }
@@ -87,7 +85,6 @@ public class BarChartRenderer extends BarLineScatterCandleBubbleRenderer {
     private RectF mBarShadowRectBuffer = new RectF();
 
     protected void drawDataSet(Canvas c, IBarDataSet dataSet, int index) {
-        Log.d(TAG,"drawDataSet:"+index);
         Transformer trans = mChart.getTransformer(dataSet.getAxisDependency());
 
         mBarBorderPaint.setColor(dataSet.getBarBorderColor());
@@ -113,6 +110,8 @@ public class BarChartRenderer extends BarLineScatterCandleBubbleRenderer {
                 i++) {
 
                 BarEntry e = dataSet.getEntryForIndex(i);
+
+                Log.d(TAG,"BarEntry 1");
 
                 x = e.getX();
 
@@ -149,9 +148,12 @@ public class BarChartRenderer extends BarLineScatterCandleBubbleRenderer {
 
         if (isSingleColor) {
             mRenderPaint.setColor(dataSet.getColor());
+            Log.d(TAG,"isSingleColor");
         }
 
         for (int j = 0; j < buffer.size(); j += 4) {
+
+//            Log.d(TAG,"j:"+j);
 
             if (!mViewPortHandler.isInBoundsLeft(buffer.buffer[j + 2]))
                 continue;
@@ -163,14 +165,12 @@ public class BarChartRenderer extends BarLineScatterCandleBubbleRenderer {
                 // Set the color for the currently drawn value. If the index
                 // is out of bounds, reuse colors.
                 mRenderPaint.setColor(dataSet.getColor(j / 4));
+                Log.d(TAG,"not isSingleColor");
             }
 
-            float left = buffer.buffer[j];
-            float right = buffer.buffer[j+2];
-            Log.d(TAG,"left:"+left);
-            Log.d(TAG,"right:"+right);
-            float width = right-left;
-            Log.d(TAG,"width:"+width);
+//            float left = buffer.buffer[j];
+//            float right = buffer.buffer[j+2];
+//            float width = right-left;
 
             c.drawRect(buffer.buffer[j], buffer.buffer[j + 1], buffer.buffer[j + 2],
                     buffer.buffer[j + 3], mRenderPaint);
@@ -254,6 +254,8 @@ public class BarChartRenderer extends BarLineScatterCandleBubbleRenderer {
                             continue;
 
                         BarEntry entry = dataSet.getEntryForIndex(j / 4);
+                        Log.d(TAG,"BarEntry 2");
+
                         float val = entry.getY();
 
                         if (dataSet.isDrawValuesEnabled()) {
@@ -297,7 +299,7 @@ public class BarChartRenderer extends BarLineScatterCandleBubbleRenderer {
                     while (index < dataSet.getEntryCount() * mAnimator.getPhaseX()) {
 
                         BarEntry entry = dataSet.getEntryForIndex(index);
-
+                        Log.d(TAG,"BarEntry 3");
                         float[] vals = entry.getYVals();
                         float x = (buffer.buffer[bufferIndex] + buffer.buffer[bufferIndex + 2]) / 2f;
 
@@ -436,7 +438,7 @@ public class BarChartRenderer extends BarLineScatterCandleBubbleRenderer {
                 continue;
 
             BarEntry e = set.getEntryForXValue(high.getX(), high.getY());
-
+            Log.d(TAG,"BarEntry 4");
             if (!isInBoundsX(e, set))
                 continue;
 

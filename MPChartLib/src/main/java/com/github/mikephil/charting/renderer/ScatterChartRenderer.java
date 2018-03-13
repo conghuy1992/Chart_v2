@@ -22,7 +22,7 @@ import com.github.mikephil.charting.utils.ViewPortHandler;
 import java.util.List;
 
 public class ScatterChartRenderer extends LineScatterCandleRadarRenderer {
-
+    String TAG = "ScatterChartRenderer";
     protected ScatterDataProvider mChart;
 
     public ScatterChartRenderer(ScatterDataProvider chart, ChartAnimator animator, ViewPortHandler viewPortHandler) {
@@ -47,9 +47,10 @@ public class ScatterChartRenderer extends LineScatterCandleRadarRenderer {
     }
 
     float[] mPixelBuffer = new float[2];
+    int maxWidth;
 
     protected void drawDataSet(Canvas c, IScatterDataSet dataSet) {
-
+        Log.d(TAG, "drawDataSet");
         ViewPortHandler viewPortHandler = mViewPortHandler;
 
         Transformer trans = mChart.getTransformer(dataSet.getAxisDependency());
@@ -62,9 +63,27 @@ public class ScatterChartRenderer extends LineScatterCandleRadarRenderer {
             return;
         }
 
-        int max = (int)(Math.min(
-                Math.ceil((float)dataSet.getEntryCount() * mAnimator.getPhaseX()),
-                (float)dataSet.getEntryCount()));
+        int max = (int) (Math.min(
+                Math.ceil((float) dataSet.getEntryCount() * mAnimator.getPhaseX()),
+                (float) dataSet.getEntryCount()));
+
+        if (max > 1) {
+            Entry e = dataSet.getEntryForIndex(0);
+            mPixelBuffer[0] = e.getX();
+            trans.pointValuesToPixel(mPixelBuffer);
+            float x1 = mPixelBuffer[0];
+
+            e = dataSet.getEntryForIndex(1);
+            mPixelBuffer[0] = e.getX();
+            trans.pointValuesToPixel(mPixelBuffer);
+            float x2 = mPixelBuffer[0];
+
+            Log.d(TAG, "x1:" + x1);
+            Log.d(TAG, "x2:" + x2);
+            maxWidth = (int) (x2 - x1);
+
+        }
+
 
         for (int i = 0; i < max; i++) {
 
@@ -82,20 +101,30 @@ public class ScatterChartRenderer extends LineScatterCandleRadarRenderer {
                     || !viewPortHandler.isInBoundsY(mPixelBuffer[1]))
                 continue;
 
-            mRenderPaint.setColor(dataSet.getColor(i / 2));
+//            mRenderPaint.setColor(dataSet.getColor(i / 2));
 //            mRenderPaint.setColor(Color.GREEN);
-            renderer.renderShape(
-                    c, dataSet, mViewPortHandler,
-                    mPixelBuffer[0], mPixelBuffer[1],
-                    mRenderPaint);
+//            renderer.renderShape(
+//                    c, dataSet, mViewPortHandler,
+//                    mPixelBuffer[0], mPixelBuffer[1],
+//                    mRenderPaint);
+
+            if(e.visible){
+                renderer.renderShape(
+                        c, dataSet, mViewPortHandler,
+                        mPixelBuffer[0], mPixelBuffer[1],
+                        mRenderPaint);
+            }
+
+
         }
     }
 
     @Override
     public void drawValues(Canvas c) {
-
+        Log.d(TAG, "drawValues");
         // if values are drawn
         if (isDrawingValuesAllowed(mChart)) {
+
 
             List<IScatterDataSet> dataSets = mChart.getScatterData().getDataSets();
 
@@ -144,17 +173,27 @@ public class ScatterChartRenderer extends LineScatterCandleRadarRenderer {
                                 dataSet.getValueTextColor(j / 2 + mXBounds.min));
                     }
 
-                    if (entry.getIcon() != null && dataSet.isDrawIconsEnabled()) {
+                    if (entry.visible && entry.getIcon() != null && dataSet.isDrawIconsEnabled()) {
 
                         Drawable icon = entry.getIcon();
+
+                        int y = (int) (positions[j + 1] + iconsOffset.y);
+                        int w = icon.getIntrinsicWidth();
+                        int h = icon.getIntrinsicHeight();
+                        if (maxWidth > 0) {
+                            w = maxWidth;
+                            h = maxWidth;
+
+//                            y-=h/2;
+                        }
 
                         Utils.drawImage(
                                 c,
                                 icon,
-                                (int)(positions[j] + iconsOffset.x),
-                                (int)(positions[j + 1] + iconsOffset.y),
-                                icon.getIntrinsicWidth(),
-                                icon.getIntrinsicHeight());
+                                (int) (positions[j] + iconsOffset.x),
+                                y,
+                                w,
+                                h);
                     }
                 }
 

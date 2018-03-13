@@ -165,6 +165,9 @@ public class ScatterChartRendererCustom extends LineScatterCandleRadarRenderer {
             float w = image.getWidth();
             x = x - w / 2f;
 
+
+//            y-=image.getHeight();
+
             c.drawBitmap(image, x, y, null);
         } else {
         }
@@ -211,6 +214,9 @@ public class ScatterChartRendererCustom extends LineScatterCandleRadarRenderer {
                         continue;
 
                     Entry entry = dataSet.getEntryForIndex(j / 2 + mXBounds.min);
+
+                    int p = j / 2 + mXBounds.min;
+                    Log.d(TAG, "position:" + p);
 
                     if (dataSet.isDrawValuesEnabled()) {
                         drawValue(c,

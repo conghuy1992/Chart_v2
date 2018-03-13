@@ -28,7 +28,7 @@ import com.github.mikephil.charting.utils.ViewPortHandler;
  */
 public class BarLineChartTouchListener extends ChartTouchListener<BarLineChartBase<? extends BarLineScatterCandleBubbleData<?
         extends IBarLineScatterCandleBubbleDataSet<? extends Entry>>>> {
-
+    private String TAG = "BarLineChartTouchListener";
     /**
      * the original touch-matrix from the chart
      */
@@ -337,6 +337,28 @@ public class BarLineChartTouchListener extends ChartTouchListener<BarLineChartBa
             l.onChartTranslate(event, distanceX, distanceY);
     }
 
+    public void zoomDefault(){
+        mLastGesture = ChartGesture.X_ZOOM;
+        ViewPortHandler h = mChart.getViewPortHandler();
+//        OnChartGestureListener l = mChart.getOnChartGestureListener();
+        float xDist = 1.5f;
+        float scaleX = xDist / mSavedXDist; // x-axis scale
+        MPPointF t = getTrans(mTouchPointCenter.x, mTouchPointCenter.y);
+        boolean isZoomingOut = (scaleX < 1);
+        boolean canZoomMoreX = isZoomingOut ?
+                h.canZoomOutMoreX() :
+                h.canZoomInMoreX();
+
+        if (canZoomMoreX) {
+
+            mMatrix.set(mSavedMatrix);
+            mMatrix.postScale(scaleX, 1f, t.x, t.y);
+
+//            if (l != null)
+//                l.onChartScale(event, scaleX, 1f);
+        }
+    }
+
     /**
      * Performs the all operations necessary for pinch and axis zoom.
      *
@@ -359,6 +381,7 @@ public class BarLineChartTouchListener extends ChartTouchListener<BarLineChartBa
 
                 // take actions depending on the activated touch mode
                 if (mTouchMode == PINCH_ZOOM) {
+                    Log.d(TAG,"PINCH_ZOOM");
 
                     mLastGesture = ChartGesture.PINCH_ZOOM;
 
@@ -387,7 +410,7 @@ public class BarLineChartTouchListener extends ChartTouchListener<BarLineChartBa
                     }
 
                 } else if (mTouchMode == X_ZOOM && mChart.isScaleXEnabled()) {
-
+                    Log.d(TAG,"X_ZOOM && isScaleXEnabled");
                     mLastGesture = ChartGesture.X_ZOOM;
 
                     float xDist = getXDist(event);
@@ -408,7 +431,7 @@ public class BarLineChartTouchListener extends ChartTouchListener<BarLineChartBa
                     }
 
                 } else if (mTouchMode == Y_ZOOM && mChart.isScaleYEnabled()) {
-
+                    Log.d(TAG,"Y_ZOOM && isScaleYEnabled");
                     mLastGesture = ChartGesture.Y_ZOOM;
 
                     float yDist = getYDist(event);

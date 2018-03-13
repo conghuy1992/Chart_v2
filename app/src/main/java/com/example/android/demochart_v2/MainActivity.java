@@ -4,15 +4,19 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.MotionEvent;
+import android.view.View;
 import android.view.WindowManager;
 import android.widget.Toast;
 
 import com.github.mikephil.charting.charts.CombinedChart;
 import com.github.mikephil.charting.charts.CombinedChart.DrawOrder;
 import com.github.mikephil.charting.components.AxisBase;
+import com.github.mikephil.charting.components.Description;
 import com.github.mikephil.charting.components.Legend;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.components.XAxis.XAxisPosition;
@@ -35,16 +39,17 @@ import com.github.mikephil.charting.data.ScatterDataSet;
 import com.github.mikephil.charting.data.ScatterDto;
 import com.github.mikephil.charting.formatter.IAxisValueFormatter;
 import com.github.mikephil.charting.highlight.Highlight;
+import com.github.mikephil.charting.listener.ChartTouchListener;
 import com.github.mikephil.charting.listener.OnChartValueSelectedListener;
 import com.github.mikephil.charting.renderer.CombinedChartRenderer;
 import com.github.mikephil.charting.utils.ColorTemplate;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
     private String TAG = "MainActivity";
     private CombinedChart mChart;
-    private final int itemcount = 12;
 
     protected float getRandom(float range, float startsfrom) {
         return (float) (Math.random() * range) + startsfrom;
@@ -54,6 +59,18 @@ public class MainActivity extends AppCompatActivity {
             "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec",
 //            "13","14","15","16","17","18","19","20"
     };
+    private List<DemoDto> list;
+
+    private void initListSample() {
+        list = new ArrayList<>();
+
+        for (String s : mMonths) {
+            DemoDto obj = new DemoDto();
+            obj.month = s;
+            list.add(obj);
+        }
+
+    }
 
     private void showMsg(String msg) {
         Toast.makeText(getApplicationContext(), msg, Toast.LENGTH_SHORT).show();
@@ -66,35 +83,54 @@ public class MainActivity extends AppCompatActivity {
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.content_main);
 
+        initListSample();
+
         mChart = (CombinedChart) findViewById(R.id.chart1);
+        CustomMarkerView mv = new CustomMarkerView(this, R.layout.marker_custom);
+        mChart.setMarker(mv);
 
-        mChart.setOnChartValueSelectedListener(new OnChartValueSelectedListener() {
-            @Override
-            public void onValueSelected(Entry e, Highlight h) {
-                if (e instanceof ScatterDto) showMsg("ScatterDto");
-            }
+        mChart.setScaleEnabled(false);
+        mChart.setHighlightFullBarEnabled(false);
+        mChart.zoomDefault();
 
-            @Override
-            public void onNothingSelected() {
+//        mChart.setOnChartValueSelectedListener(new OnChartValueSelectedListener() {
+//            @Override
+//            public void onValueSelected(Entry e, Highlight h) {
+////                if (e instanceof ScatterDto) showMsg("Scatter:" + e.getX());
+////
+////                else if (e instanceof LineEntry) showMsg("LineEntry:" + e.getX());
+//
+//            }
+//
+//            @Override
+//            public void onNothingSelected() {
+//
+//            }
+//        });
 
-            }
-        });
-
+        Description description = new Description();
+        description.setText("");
+        mChart.setDescription(description);
         mChart.setBackgroundColor(Color.WHITE);
         mChart.setDrawGridBackground(false);
         mChart.setDrawBarShadow(false);
-//        combinedChart.setDrawValueAboveBar(false);
+//        mChart.setDrawValueAboveBar(false);
         mChart.getXAxis().setDrawGridLines(false);
 
 //        mChart.getXAxis().setEnabled(false);
-//        mChart.getAxisLeft().setDrawAxisLine(false);
+
         mChart.getAxisRight().setDrawAxisLine(false);
         mChart.getAxisRight().setDrawLabels(false);
+
+        mChart.getAxisLeft().setDrawAxisLine(false);
+        mChart.getAxisLeft().setDrawLabels(false);
+
+        mChart.getXAxis().setDrawAxisLine(false);
 
 
         // draw bars behind lines
         mChart.setDrawOrder(new DrawOrder[]{
-                DrawOrder.BAR, DrawOrder.LINE, DrawOrder.SCATTER_CUSTOM
+                DrawOrder.BAR, DrawOrder.LINE, DrawOrder.SCATTER
         });
 
         Legend l = mChart.getLegend();
@@ -103,6 +139,7 @@ public class MainActivity extends AppCompatActivity {
         l.setHorizontalAlignment(Legend.LegendHorizontalAlignment.CENTER);
         l.setOrientation(Legend.LegendOrientation.HORIZONTAL);
         l.setDrawInside(false);
+        l.setEnabled(false);
 
         YAxis rightAxis = mChart.getAxisRight();
         rightAxis.setDrawGridLines(false);
@@ -113,9 +150,9 @@ public class MainActivity extends AppCompatActivity {
         leftAxis.setAxisMinimum(0f); // this replaces setStartAtZero(true)
 
         XAxis xAxis = mChart.getXAxis();
-        xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
+        xAxis.setPosition(XAxisPosition.BOTTOM);
 
-        xAxis.setLabelCount(mMonths.length);
+        xAxis.setLabelCount(list.size());
 
         xAxis.setAxisMinimum(0f);
         xAxis.setGranularity(1f);
@@ -123,18 +160,17 @@ public class MainActivity extends AppCompatActivity {
         xAxis.setValueFormatter(new IAxisValueFormatter() {
             @Override
             public String getFormattedValue(float value, AxisBase axis) {
-                return mMonths[(int) value % mMonths.length];
+                return list.get((int) value % list.size()).month;
+
             }
         });
 
         CombinedData data = new CombinedData();
-
-        data.setData(generateLineData());
         data.setData(generateBarData());
+        data.setData(generateLineData());
 //        data.setData(generateBarCustomData());
         data.setData(generateScatterData());
 //        data.setData(generateCandleData());
-
 
         float xAxisPadding = 0.45f;
         xAxis.setAxisMinimum(-xAxisPadding);
@@ -145,9 +181,10 @@ public class MainActivity extends AppCompatActivity {
 //        mChart.xAxis.axisMaximum = combinedChartData.xMax + xAxisPadding
 
         mChart.setData(data);
+
         mChart.invalidate();
-        Bitmap starBitmap = BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher);
-        mChart.setRenderer(new CombinedChartRenderer(mChart, mChart.getAnimator(), mChart.getViewPortHandler(), starBitmap));
+//        Bitmap starBitmap = BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher);
+//        mChart.setRenderer(new CombinedChartRenderer(mChart, mChart.getAnimator(), mChart.getViewPortHandler(), starBitmap));
 
     }
 
@@ -157,19 +194,29 @@ public class MainActivity extends AppCompatActivity {
 
         ArrayList<Entry> entries = new ArrayList<Entry>();
 
-        for (int index = 0; index < itemcount; index++)
-            entries.add(new Entry(index, getRandom(15, 5)));
+        for (int index = 0; index < list.size(); index++) {
+            float y = list.get(index).barY - 2f;
+            if (y < 0) y = 0;
+            LineEntry entry = new LineEntry(index, y);
+            entries.add(entry);
+        }
 
         LineDataSet set = new LineDataSet(entries, "Line DataSet");
-        set.setColor(Color.rgb(240, 238, 70));
-        set.setCircleColor(Color.rgb(240, 238, 70));
-        set.setCircleRadius(5f);
-        set.setFillColor(Color.rgb(240, 238, 70));
-        set.setMode(LineDataSet.Mode.CUBIC_BEZIER);
-        set.setDrawValues(true);
-        set.setValueTextSize(10f);
-        set.setValueTextColor(Color.rgb(240, 238, 70));
+        set.setDrawHorizontalHighlightIndicator(false);
+        set.setDrawVerticalHighlightIndicator(false);
 
+        int c = Color.parseColor("#e06e5c");
+        set.setColor(c);
+        set.setCircleColor(c);
+        set.setCircleRadius(5f);
+        set.setFillColor(c);
+        set.setLineWidth(2f);
+        set.setCircleColorHole(c);
+//        set.setMode(LineDataSet.Mode.CUBIC_BEZIER);
+        set.setDrawValues(true);
+        set.setValueTextSize(1f);
+//        set.setValueTextColor(Color.rgb(240, 238, 70));
+        set.setDrawValues(false);
         set.setAxisDependency(YAxis.AxisDependency.LEFT);
         d.addDataSet(set);
 
@@ -179,20 +226,41 @@ public class MainActivity extends AppCompatActivity {
 
     private BarData generateBarData() {
         ArrayList<BarEntry> entries1 = new ArrayList<BarEntry>();
-        for (int index = 0; index < mMonths.length; index++)
-            entries1.add(new BarEntry(index, getRandom(15, 5), index + 2));
+        for (int index = 0; index < list.size(); index++) {
+            float y = getRandom(15, 5);
+            list.get(index).barY = y;
+            BarEntry obj = new BarEntry(index, y);
+            entries1.add(obj);
+        }
 
         BarDataSet set1 = new BarDataSet(entries1, "Bar 1");
-//        set1.setColors(ColorTemplate.COLORFUL_COLORS);
-        set1.setValueTextColor(Color.rgb(60, 220, 78));
+//        set1.setColors(new int[] {Color.RED, Color.GREEN, Color.GRAY, Color.BLACK, Color.BLUE,
+//                Color.RED, Color.GREEN, Color.GRAY, Color.BLACK, Color.BLUE,Color.RED, Color.GREEN});
+
+
+
+        int color[] = new int[list.size()];
+        for (int i = 0; i < list.size(); i++) {
+            String s = "#8bb39c";
+            if (i % 2 == 0) s = "#908e94";
+            color[i] = Color.parseColor(s);
+        }
+        set1.setColors(color);
+        set1.setValueTextSize(1f);
+        set1.setDrawValues(false);
+//        set1.setValueTextColor(Color.rgb(60, 220, 78));
+
 //        set1.setValueTextSize(10f);
 //        set1.setAxisDependency(YAxis.AxisDependency.LEFT);
 //        float barWidth = 0.45f; // x2 dataset
         // (0.45 + 0.02) * 2 + 0.06 = 1.00 -> interval per "group"
-
+        set1.setHighLightAlpha(0);
         BarData d = new BarData(set1);
 //        BarData d = new BarData(set1);
 //        d.setBarWidth(barWidth);
+
+
+
 
         return d;
     }
@@ -203,18 +271,22 @@ public class MainActivity extends AppCompatActivity {
 
         ArrayList<Entry> entries = new ArrayList<Entry>();
 
-        for (float index = 0; index < mMonths.length; index++) {
-            ScatterDto entry = new ScatterDto(index, getRandom(10, 25), index % 2 == 0 ? true : false);
+        for (int index = 0; index < list.size(); index++) {
+            float y = list.get(index).barY + 0.7f;
+            Entry entry = new Entry(index, y);
+            entry.visible = index % 2 == 0 ? true : false;
             Drawable myIcon = getResources().getDrawable(R.mipmap.ic_launcher);
-//            entry.setIcon(myIcon);
+            entry.setIcon(myIcon);
             entries.add(entry);
         }
 
         ScatterDataSet set = new ScatterDataSet(entries, "Scatter DataSet");
+        set.setDrawHorizontalHighlightIndicator(false);
+        set.setDrawVerticalHighlightIndicator(false);
         set.setColors(Color.RED);
         set.setScatterShapeSize(7.5f);
         set.setDrawValues(false);
-//        set.setDrawIcons(true);
+        set.setDrawIcons(true);
         set.setValueTextSize(10f);
         d.addDataSet(set);
 
@@ -227,7 +299,7 @@ public class MainActivity extends AppCompatActivity {
 
         ArrayList<CandleEntry> entries = new ArrayList<CandleEntry>();
 
-        for (int index = 0; index < itemcount; index += 2)
+        for (int index = 0; index < list.size(); index += 2)
             entries.add(new CandleEntry(index + 1f, 90, 70, 85, 75f));
 
         CandleDataSet set = new CandleDataSet(entries, "Candle DataSet");
@@ -247,7 +319,7 @@ public class MainActivity extends AppCompatActivity {
 
         ArrayList<BubbleEntry> entries = new ArrayList<BubbleEntry>();
 
-        for (int index = 0; index < itemcount; index++) {
+        for (int index = 0; index < list.size(); index++) {
             float y = getRandom(10, 40);
             float size = getRandom(50, 50);
             Log.d(TAG, "size:" + size);

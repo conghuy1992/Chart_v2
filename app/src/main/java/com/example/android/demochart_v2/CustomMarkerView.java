@@ -22,12 +22,13 @@ import com.github.mikephil.charting.utils.MPPointF;
 public class CustomMarkerView extends MarkerView {
     private String TAG = "CustomMarkerView";
     private TextView tvTitle;
-    private LinearLayout root;
+    private LinearLayout layoutOne, layoutTwo;
 
     public CustomMarkerView(Context context, int layoutResource) {
         super(context, layoutResource);
         tvTitle = (TextView) findViewById(R.id.tvTitle);
-        root = (LinearLayout) findViewById(R.id.root);
+        layoutOne = (LinearLayout) findViewById(R.id.layoutOne);
+        layoutTwo = (LinearLayout) findViewById(R.id.layoutTwo);
         Log.d(TAG, "CustomMarkerView");
     }
 
@@ -43,6 +44,9 @@ public class CustomMarkerView extends MarkerView {
     @Override
     public void refreshContent(Entry e, Highlight highlight) {
 
+        layoutOne.setVisibility(View.GONE);
+        layoutTwo.setVisibility(View.GONE);
+
         float top = e.coordinatesY - distance;
         float bottom = e.coordinatesY + distance;
         if (e instanceof BarEntry || e instanceof LineEntry) {
@@ -54,23 +58,22 @@ public class CustomMarkerView extends MarkerView {
         }
 
         /**
-         * if barchart top < 0
+         * if barchart -> top alway < 0
          * */
 
-        Log.d(TAG,"centerY: "+e.coordinatesY);
+        Log.d(TAG, "centerY: " + e.coordinatesY);
         Log.d(TAG, "top:" + top);
         Log.d(TAG, "bottom:" + bottom);
         if (top > 0 && coordinatesY >= top && coordinatesY <= bottom) {
-            root.setVisibility(View.VISIBLE);
-
             if (e instanceof LineEntry) {
                 tvTitle.setText("LineEntry");
+                layoutOne.setVisibility(View.VISIBLE);
             } else {
                 tvTitle.setText("ICON");
-                Log.d(TAG, "ICON");
+                layoutTwo.setVisibility(View.VISIBLE);
             }
         } else {
-            root.setVisibility(View.GONE);
+//            layoutOne.setVisibility(View.GONE);
         }
         super.refreshContent(e, highlight);
     }

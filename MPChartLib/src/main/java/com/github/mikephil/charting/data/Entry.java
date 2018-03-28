@@ -19,6 +19,8 @@ public class Entry extends BaseEntry implements Parcelable {
     /** the x value */
     private float x = 0f;
     public boolean visible;
+    public float coordinatesY;
+    public float heightImage;
 
     public Entry() {
 

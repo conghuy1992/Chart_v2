@@ -1,8 +1,10 @@
 
 package com.github.mikephil.charting.renderer;
 
+import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.util.Log;
 
@@ -78,10 +80,10 @@ public class ScatterChartRenderer extends LineScatterCandleRadarRenderer {
             trans.pointValuesToPixel(mPixelBuffer);
             float x2 = mPixelBuffer[0];
 
-            Log.d(TAG, "x1:" + x1);
-            Log.d(TAG, "x2:" + x2);
+//            Log.d(TAG, "x1:" + x1);
+//            Log.d(TAG, "x2:" + x2);
             maxWidth = (int) (x2 - x1);
-
+            Log.d(TAG, "maxWidth:" + maxWidth);
         }
 
 
@@ -108,7 +110,7 @@ public class ScatterChartRenderer extends LineScatterCandleRadarRenderer {
 //                    mPixelBuffer[0], mPixelBuffer[1],
 //                    mRenderPaint);
 
-            if(e.visible){
+            if (e.visible) {
                 renderer.renderShape(
                         c, dataSet, mViewPortHandler,
                         mPixelBuffer[0], mPixelBuffer[1],
@@ -174,31 +176,52 @@ public class ScatterChartRenderer extends LineScatterCandleRadarRenderer {
                     }
 
                     if (entry.visible && entry.getIcon() != null && dataSet.isDrawIconsEnabled()) {
-
                         Drawable icon = entry.getIcon();
-
                         int y = (int) (positions[j + 1] + iconsOffset.y);
-                        int w = icon.getIntrinsicWidth();
-                        int h = icon.getIntrinsicHeight();
+                        float w = icon.getIntrinsicWidth();
+                        float h = icon.getIntrinsicHeight();
                         if (maxWidth > 0) {
-                            w = maxWidth;
-                            h = maxWidth;
-
-//                            y-=h/2;
+                            if (w > maxWidth) {
+                                float ratio = maxWidth / w;
+                                w = maxWidth;
+                                h *= ratio;
+//                                Log.d(TAG, "w:" + w);
+//                                Log.d(TAG, "h:" + h);
+//                                Log.d(TAG, "----");
+                            }
+                            Bitmap bitmap = ((BitmapDrawable) icon).getBitmap();
+                            y = (int) (y - h + 20);
+                            Log.d(TAG, "y:" + y);
+                            entry.coordinatesY = y + h / 2f;
+                            entry.heightImage = h;
+                            drawImage(c,
+                                    scaleBarImage(bitmap, (int) w, (int) h),
+                                    (positions[j] + iconsOffset.x) - w / 2f,
+                                    y);
+                        } else {
+                            Utils.drawImage(
+                                    c,
+                                    icon,
+                                    (int) (positions[j] + iconsOffset.x),
+                                    y,
+                                    (int) w,
+                                    (int) h);
                         }
-
-                        Utils.drawImage(
-                                c,
-                                icon,
-                                (int) (positions[j] + iconsOffset.x),
-                                y,
-                                w,
-                                h);
                     }
                 }
 
                 MPPointF.recycleInstance(iconsOffset);
             }
+        }
+    }
+
+    private Bitmap scaleBarImage(Bitmap bitmap, int w, int h) {
+        return Bitmap.createScaledBitmap(bitmap, w, h, false);
+    }
+
+    protected void drawImage(Canvas c, Bitmap image, float x, float y) {
+        if (image != null) {
+            c.drawBitmap(image, x, y, null);
         }
     }
 

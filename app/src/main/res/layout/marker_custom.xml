@@ -4,6 +4,7 @@
     android:background="#ff0000"
     android:layout_height="wrap_content"
     android:minWidth="100dp"
+    android:id="@+id/root"
     android:padding="5dp"
     android:orientation="vertical">
 

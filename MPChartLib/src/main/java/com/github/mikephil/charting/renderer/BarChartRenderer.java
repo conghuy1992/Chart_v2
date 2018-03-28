@@ -24,7 +24,7 @@ import com.github.mikephil.charting.utils.ViewPortHandler;
 import java.util.List;
 
 public class BarChartRenderer extends BarLineScatterCandleBubbleRenderer {
-    private String TAG=  "BarChartRenderer";
+    private String TAG = "BarChartRenderer";
     protected BarDataProvider mChart;
 
     /**
@@ -105,13 +105,13 @@ public class BarChartRenderer extends BarLineScatterCandleBubbleRenderer {
             final float barWidthHalf = barWidth / 2.0f;
             float x;
 
-            for (int i = 0, count = Math.min((int)(Math.ceil((float)(dataSet.getEntryCount()) * phaseX)), dataSet.getEntryCount());
-                i < count;
-                i++) {
+            for (int i = 0, count = Math.min((int) (Math.ceil((float) (dataSet.getEntryCount()) * phaseX)), dataSet.getEntryCount());
+                 i < count;
+                 i++) {
 
                 BarEntry e = dataSet.getEntryForIndex(i);
 
-                Log.d(TAG,"BarEntry 1");
+                Log.d(TAG, "BarEntry 1");
 
                 x = e.getX();
 
@@ -148,7 +148,7 @@ public class BarChartRenderer extends BarLineScatterCandleBubbleRenderer {
 
         if (isSingleColor) {
             mRenderPaint.setColor(dataSet.getColor());
-            Log.d(TAG,"isSingleColor");
+            Log.d(TAG, "isSingleColor");
         }
 
         for (int j = 0; j < buffer.size(); j += 4) {
@@ -165,13 +165,18 @@ public class BarChartRenderer extends BarLineScatterCandleBubbleRenderer {
                 // Set the color for the currently drawn value. If the index
                 // is out of bounds, reuse colors.
                 mRenderPaint.setColor(dataSet.getColor(j / 4));
-                Log.d(TAG,"not isSingleColor");
+                Log.d(TAG, "not isSingleColor");
             }
 
 //            float left = buffer.buffer[j];
 //            float right = buffer.buffer[j+2];
 //            float width = right-left;
 
+//            Log.d(TAG, "left: " + buffer.buffer[j]);
+//            Log.d(TAG, "top: " + buffer.buffer[j + 1]);
+//            Log.d(TAG, "right: " +  buffer.buffer[j + 2]);
+//            Log.d(TAG, "bottom: " + buffer.buffer[j + 3]);
+//            Log.d(TAG, "--------");
             c.drawRect(buffer.buffer[j], buffer.buffer[j + 1], buffer.buffer[j + 2],
                     buffer.buffer[j + 3], mRenderPaint);
 
@@ -254,7 +259,7 @@ public class BarChartRenderer extends BarLineScatterCandleBubbleRenderer {
                             continue;
 
                         BarEntry entry = dataSet.getEntryForIndex(j / 4);
-                        Log.d(TAG,"BarEntry 2");
+                        Log.d(TAG, "BarEntry 2");
 
                         float val = entry.getY();
 
@@ -281,8 +286,8 @@ public class BarChartRenderer extends BarLineScatterCandleBubbleRenderer {
                             Utils.drawImage(
                                     c,
                                     icon,
-                                    (int)px,
-                                    (int)py,
+                                    (int) px,
+                                    (int) py,
                                     icon.getIntrinsicWidth(),
                                     icon.getIntrinsicHeight());
                         }
@@ -299,7 +304,7 @@ public class BarChartRenderer extends BarLineScatterCandleBubbleRenderer {
                     while (index < dataSet.getEntryCount() * mAnimator.getPhaseX()) {
 
                         BarEntry entry = dataSet.getEntryForIndex(index);
-                        Log.d(TAG,"BarEntry 3");
+                        Log.d(TAG, "BarEntry 3");
                         float[] vals = entry.getYVals();
                         float x = (buffer.buffer[bufferIndex] + buffer.buffer[bufferIndex + 2]) / 2f;
 
@@ -338,8 +343,8 @@ public class BarChartRenderer extends BarLineScatterCandleBubbleRenderer {
                                 Utils.drawImage(
                                         c,
                                         icon,
-                                        (int)px,
-                                        (int)py,
+                                        (int) px,
+                                        (int) py,
                                         icon.getIntrinsicWidth(),
                                         icon.getIntrinsicHeight());
                             }
@@ -407,8 +412,8 @@ public class BarChartRenderer extends BarLineScatterCandleBubbleRenderer {
                                     Utils.drawImage(
                                             c,
                                             icon,
-                                            (int)(x + iconsOffset.x),
-                                            (int)(y + iconsOffset.y),
+                                            (int) (x + iconsOffset.x),
+                                            (int) (y + iconsOffset.y),
                                             icon.getIntrinsicWidth(),
                                             icon.getIntrinsicHeight());
                                 }
@@ -427,7 +432,7 @@ public class BarChartRenderer extends BarLineScatterCandleBubbleRenderer {
 
     @Override
     public void drawHighlighted(Canvas c, Highlight[] indices) {
-
+        Log.d(TAG, "drawHighlighted");
         BarData barData = mChart.getBarData();
 
         for (Highlight high : indices) {
@@ -438,7 +443,7 @@ public class BarChartRenderer extends BarLineScatterCandleBubbleRenderer {
                 continue;
 
             BarEntry e = set.getEntryForXValue(high.getX(), high.getY());
-            Log.d(TAG,"BarEntry 4");
+
             if (!isInBoundsX(e, set))
                 continue;
 
@@ -446,15 +451,16 @@ public class BarChartRenderer extends BarLineScatterCandleBubbleRenderer {
 
             mHighlightPaint.setColor(set.getHighLightColor());
             mHighlightPaint.setAlpha(set.getHighLightAlpha());
+            Log.d(TAG, "BarEntry 4 - getHighLightAlpha:" + set.getHighLightAlpha());
 
-            boolean isStack = (high.getStackIndex() >= 0  && e.isStacked()) ? true : false;
-
+            boolean isStack = (high.getStackIndex() >= 0 && e.isStacked()) ? true : false;
+//            Log.d(TAG,"isStack:"+isStack);
             final float y1;
             final float y2;
 
             if (isStack) {
 
-                if(mChart.isHighlightFullBarEnabled()) {
+                if (mChart.isHighlightFullBarEnabled()) {
 
                     y1 = e.getPositiveSum();
                     y2 = -e.getNegativeSum();
@@ -482,6 +488,7 @@ public class BarChartRenderer extends BarLineScatterCandleBubbleRenderer {
 
     /**
      * Sets the drawing position of the highlight object based on the riven bar-rect.
+     *
      * @param high
      */
     protected void setHighlightDrawPos(Highlight high, RectF bar) {

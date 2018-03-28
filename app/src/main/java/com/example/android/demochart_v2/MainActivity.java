@@ -69,37 +69,66 @@ public class MainActivity extends AppCompatActivity {
             obj.month = s;
             list.add(obj);
         }
-
     }
 
     private void showMsg(String msg) {
         Toast.makeText(getApplicationContext(), msg, Toast.LENGTH_SHORT).show();
     }
 
+    private boolean isMove = false;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
+
         setContentView(R.layout.content_main);
 
         initListSample();
 
         mChart = (CombinedChart) findViewById(R.id.chart1);
-        CustomMarkerView mv = new CustomMarkerView(this, R.layout.marker_custom);
+        final CustomMarkerView mv = new CustomMarkerView(this, R.layout.marker_custom);
         mChart.setMarker(mv);
 
         mChart.setScaleEnabled(false);
         mChart.setHighlightFullBarEnabled(false);
         mChart.zoomDefault();
 
+        mChart.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View view, MotionEvent event) {
+                float y = event.getY();
+                switch (event.getAction()) {
+                    case MotionEvent.ACTION_DOWN: {
+//                        Log.d(TAG, "ACTION_DOWN");
+                        isMove = false;
+                        break;
+                    }
+                    case MotionEvent.ACTION_MOVE: {
+//                        Log.d(TAG, "ACTION_MOVE");
+                        isMove = true;
+                        break;
+                    }
+                    case MotionEvent.ACTION_UP: {
+                        if (!isMove) {
+                            mv.updateView(y);
+                            Log.d(TAG, "Y:" + y);
+                            Log.d(TAG, "ACTION_UP");
+                        }
+                        break;
+                    }
+                }
+                return false;
+            }
+        });
+
 //        mChart.setOnChartValueSelectedListener(new OnChartValueSelectedListener() {
 //            @Override
 //            public void onValueSelected(Entry e, Highlight h) {
-////                if (e instanceof ScatterDto) showMsg("Scatter:" + e.getX());
-////
-////                else if (e instanceof LineEntry) showMsg("LineEntry:" + e.getX());
-//
+//                if (e instanceof ScatterDto) Log.d(TAG,"Scatter");
+//                else if (e instanceof LineEntry) Log.d(TAG,"LineEntry");
+//                else if (e instanceof BarEntry) Log.d(TAG,"BarEntry");
 //            }
 //
 //            @Override
@@ -222,7 +251,6 @@ public class MainActivity extends AppCompatActivity {
         return d;
     }
 
-
     private BarData generateBarData() {
         ArrayList<BarEntry> entries1 = new ArrayList<BarEntry>();
         for (int index = 0; index < list.size(); index++) {
@@ -252,8 +280,11 @@ public class MainActivity extends AppCompatActivity {
 //        set1.setAxisDependency(YAxis.AxisDependency.LEFT);
 //        float barWidth = 0.45f; // x2 dataset
         // (0.45 + 0.02) * 2 + 0.06 = 1.00 -> interval per "group"
+
         set1.setHighLightAlpha(0);
+
         BarData d = new BarData(set1);
+
 //        BarData d = new BarData(set1);
 //        d.setBarWidth(barWidth);
 
@@ -271,7 +302,7 @@ public class MainActivity extends AppCompatActivity {
             float y = list.get(index).barY + 0.7f;
             Entry entry = new Entry(index, y);
             entry.visible = index % 2 == 0 ? true : false;
-            Drawable myIcon = getResources().getDrawable(R.mipmap.ic_launcher);
+            Drawable myIcon = getResources().getDrawable(R.drawable.ic_location);
             entry.setIcon(myIcon);
             entries.add(entry);
         }
@@ -280,7 +311,7 @@ public class MainActivity extends AppCompatActivity {
         set.setDrawHorizontalHighlightIndicator(false);
         set.setDrawVerticalHighlightIndicator(false);
         set.setColors(Color.RED);
-        set.setScatterShapeSize(7.5f);
+        set.setScatterShapeSize(0f);
         set.setDrawValues(false);
         set.setDrawIcons(true);
         set.setValueTextSize(10f);
@@ -332,5 +363,19 @@ public class MainActivity extends AppCompatActivity {
 
         return bd;
     }
+
+//    @Override
+//    public boolean onTouchEvent(MotionEvent event) {
+//        switch (event.getAction()) {
+//            case MotionEvent.ACTION_DOWN: {
+//                Log.d(TAG,"ACTION_DOWN");
+//                break;
+//            }
+//            case MotionEvent.ACTION_UP: {
+//                Log.d(TAG,"ACTION_UP");
+//            }
+//        }
+//        return super.onTouchEvent(event);
+//    }
 
 }

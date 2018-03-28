@@ -6,6 +6,7 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.drawable.Drawable;
+import android.util.Log;
 
 import com.github.mikephil.charting.animation.ChartAnimator;
 import com.github.mikephil.charting.charts.LineChart;
@@ -28,7 +29,7 @@ import java.util.HashMap;
 import java.util.List;
 
 public class LineChartRenderer extends LineRadarRenderer {
-
+    String TAG = "LineChartRenderer";
     protected LineDataProvider mChart;
 
     /**
@@ -576,8 +577,8 @@ public class LineChartRenderer extends LineRadarRenderer {
                         Utils.drawImage(
                                 c,
                                 icon,
-                                (int)(x + iconsOffset.x),
-                                (int)(y + iconsOffset.y),
+                                (int) (x + iconsOffset.x),
+                                (int) (y + iconsOffset.y),
                                 icon.getIntrinsicWidth(),
                                 icon.getIntrinsicHeight());
                     }
@@ -675,7 +676,13 @@ public class LineChartRenderer extends LineRadarRenderer {
                 Bitmap circleBitmap = imageCache.getBitmap(j);
 
                 if (circleBitmap != null) {
-                    c.drawBitmap(circleBitmap, mCirclesBuffer[0] - circleRadius, mCirclesBuffer[1] - circleRadius, null);
+//                    float left = mCirclesBuffer[0] - circleRadius;
+                    float top = mCirclesBuffer[1] - circleRadius;
+//                    Log.d(TAG, "left:" + left);
+//                    Log.d(TAG, "top:" + top);
+//                    Log.d(TAG,"----");
+                    e.coordinatesY = top;
+                    c.drawBitmap(circleBitmap, mCirclesBuffer[0] - circleRadius, top, null);
                 }
             }
         }

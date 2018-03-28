@@ -7,7 +7,15 @@
 
     <com.github.mikephil.charting.charts.CombinedChart
         android:id="@+id/chart1"
+        android:layout_above="@+id/btn"
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>
+
+    <Button
+        android:visibility="gone"
+        android:id="@+id/btn"
+        android:layout_width="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_height="300dp" />
 
 </RelativeLayout>

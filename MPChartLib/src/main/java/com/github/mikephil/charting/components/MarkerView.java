@@ -2,6 +2,7 @@ package com.github.mikephil.charting.components;
 
 import android.content.Context;
 import android.graphics.Canvas;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.RelativeLayout;
@@ -20,8 +21,8 @@ import java.lang.ref.WeakReference;
  *
  * @author Philipp Jahoda
  */
-public class MarkerView extends RelativeLayout implements IMarker {
-
+    public class MarkerView extends RelativeLayout implements IMarker {
+    private String TAG = "MarkerView";
     private MPPointF mOffset = new MPPointF();
     private MPPointF mOffset2 = new MPPointF();
     private WeakReference<Chart> mWeakChart;
@@ -118,12 +119,18 @@ public class MarkerView extends RelativeLayout implements IMarker {
     @Override
     public void draw(Canvas canvas, float posX, float posY) {
 
+        Log.d(TAG,"posX:"+posX+"   --  posY:"+posY);
+
         MPPointF offset = getOffsetForDrawingAtPoint(posX, posY);
+
+        Log.d(TAG,"offsetX:"+offset.x+"   --  offsetY:"+offset.y);
 
         int saveId = canvas.save();
         // translate to the correct position and draw
         canvas.translate(posX + offset.x, posY + offset.y);
         draw(canvas);
         canvas.restoreToCount(saveId);
+
+//        getOffsetForDrawingAtPoint(posX, posY);
     }
 }

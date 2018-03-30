@@ -46,6 +46,7 @@ public class CustomMarkerView extends MarkerView {
 
         layoutOne.setVisibility(View.GONE);
         layoutTwo.setVisibility(View.GONE);
+        space = 10f;
 
         float top = e.coordinatesY - distance;
         float bottom = e.coordinatesY + distance;
@@ -55,6 +56,7 @@ public class CustomMarkerView extends MarkerView {
             //  Entry -> use for scatter chart
             top = e.coordinatesY - e.heightImage;
             bottom = e.coordinatesY + e.heightImage;
+            space = e.heightImage;
         }
 
         /**
@@ -76,5 +78,13 @@ public class CustomMarkerView extends MarkerView {
 //            layoutOne.setVisibility(View.GONE);
         }
         super.refreshContent(e, highlight);
+    }
+
+    float space;
+
+    @Override
+    public MPPointF getOffset() {
+        MPPointF offset = new MPPointF(-(getWidth() / 2), -getHeight() - 10 - space / 1.5f);
+        return offset;
     }
 }

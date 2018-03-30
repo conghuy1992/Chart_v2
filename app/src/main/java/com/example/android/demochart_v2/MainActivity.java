@@ -11,6 +11,7 @@ import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
+import android.widget.Button;
 import android.widget.Toast;
 
 import com.github.mikephil.charting.charts.CombinedChart;
@@ -76,6 +77,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private boolean isMove = false;
+    float y;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -88,40 +90,51 @@ public class MainActivity extends AppCompatActivity {
         initListSample();
 
         mChart = (CombinedChart) findViewById(R.id.chart1);
+
         final CustomMarkerView mv = new CustomMarkerView(this, R.layout.marker_custom);
         mChart.setMarker(mv);
 
-        mChart.setScaleEnabled(false);
-        mChart.setHighlightFullBarEnabled(false);
-        mChart.zoomDefault();
+//        mChart.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                Log.e(TAG,"onClick");
+//            }
+//        });
 
         mChart.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View view, MotionEvent event) {
-                float y = event.getY();
+                y = event.getY();
                 switch (event.getAction()) {
                     case MotionEvent.ACTION_DOWN: {
-//                        Log.d(TAG, "ACTION_DOWN");
-                        isMove = false;
+//                        Log.e(TAG, "ACTION_DOWN");
+//                        isMove = false;
+                        mv.updateView(y);
                         break;
                     }
                     case MotionEvent.ACTION_MOVE: {
-//                        Log.d(TAG, "ACTION_MOVE");
-                        isMove = true;
+//                        Log.e(TAG, "ACTION_MOVE");
+//                        isMove = true;
                         break;
                     }
                     case MotionEvent.ACTION_UP: {
-                        if (!isMove) {
-                            mv.updateView(y);
-                            Log.d(TAG, "Y:" + y);
-                            Log.d(TAG, "ACTION_UP");
-                        }
+//                        if (!isMove) {
+//                            mv.updateView(y);
+//                            Log.e(TAG, "Y:" + y);
+//                            Log.e(TAG, "ACTION_UP");
+//                        }
                         break;
                     }
                 }
                 return false;
             }
         });
+
+
+        mChart.setScaleEnabled(false);
+        mChart.setHighlightFullBarEnabled(false);
+        mChart.zoomDefault();
+
 
 //        mChart.setOnChartValueSelectedListener(new OnChartValueSelectedListener() {
 //            @Override
@@ -213,6 +226,29 @@ public class MainActivity extends AppCompatActivity {
         mChart.invalidate();
 //        Bitmap starBitmap = BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher);
 //        mChart.setRenderer(new CombinedChartRenderer(mChart, mChart.getAnimator(), mChart.getViewPortHandler(), starBitmap));
+
+        Button btn = (Button) findViewById(R.id.btn);
+        btn.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View view, MotionEvent event) {
+                float y = event.getY();
+                switch (event.getAction()) {
+                    case MotionEvent.ACTION_DOWN: {
+                        Log.e(TAG, "ACTION_DOWN");
+                        break;
+                    }
+                    case MotionEvent.ACTION_MOVE: {
+                        Log.e(TAG, "ACTION_MOVE");
+                        break;
+                    }
+                    case MotionEvent.ACTION_UP: {
+                        Log.e(TAG, "ACTION_UP");
+                        break;
+                    }
+                }
+                return false;
+            }
+        });
 
     }
 

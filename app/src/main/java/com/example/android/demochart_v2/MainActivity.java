@@ -58,7 +58,10 @@ public class MainActivity extends AppCompatActivity {
 
     protected String[] mMonths = new String[]{
             "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec",
-//            "13","14","15","16","17","18","19","20"
+            "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec",
+            "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec",
+            "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec",
+            "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec",
     };
     private List<DemoDto> list;
 
@@ -133,7 +136,9 @@ public class MainActivity extends AppCompatActivity {
 
         mChart.setScaleEnabled(false);
         mChart.setHighlightFullBarEnabled(false);
-        mChart.zoomDefault();
+        float ratio = mMonths.length / 12f;
+        Log.d(TAG,"ratio:"+ratio);
+        mChart.zoomDefault(ratio);
 
 
 //        mChart.setOnChartValueSelectedListener(new OnChartValueSelectedListener() {
@@ -227,6 +232,7 @@ public class MainActivity extends AppCompatActivity {
 //        Bitmap starBitmap = BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher);
 //        mChart.setRenderer(new CombinedChartRenderer(mChart, mChart.getAnimator(), mChart.getViewPortHandler(), starBitmap));
 
+
         Button btn = (Button) findViewById(R.id.btn);
         btn.setOnTouchListener(new View.OnTouchListener() {
             @Override
@@ -310,6 +316,7 @@ public class MainActivity extends AppCompatActivity {
         set1.setColors(color);
         set1.setValueTextSize(1f);
         set1.setDrawValues(false);
+
 //        set1.setValueTextColor(Color.rgb(60, 220, 78));
 
 //        set1.setValueTextSize(10f);
@@ -320,6 +327,7 @@ public class MainActivity extends AppCompatActivity {
         set1.setHighLightAlpha(0);
 
         BarData d = new BarData(set1);
+
 
 //        BarData d = new BarData(set1);
 //        d.setBarWidth(barWidth);

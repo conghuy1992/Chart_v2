@@ -1477,8 +1477,8 @@ public abstract class BarLineChartBase<T extends BarLineScatterCandleBubbleData<
         mPinchZoomEnabled = enabled;
     }
 
-    public void zoomDefault() {
-        ((BarLineChartTouchListener) mChartTouchListener).zoomDefault();
+    public void zoomDefault(float xDist) {
+        ((BarLineChartTouchListener) mChartTouchListener).zoomDefault(xDist);
     }
 
     /**

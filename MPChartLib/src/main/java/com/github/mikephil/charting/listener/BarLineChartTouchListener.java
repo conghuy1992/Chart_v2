@@ -337,11 +337,10 @@ public class BarLineChartTouchListener extends ChartTouchListener<BarLineChartBa
             l.onChartTranslate(event, distanceX, distanceY);
     }
 
-    public void zoomDefault(){
+    public void zoomDefault(float xDist){
         mLastGesture = ChartGesture.X_ZOOM;
         ViewPortHandler h = mChart.getViewPortHandler();
 //        OnChartGestureListener l = mChart.getOnChartGestureListener();
-        float xDist = 1.5f;
         float scaleX = xDist / mSavedXDist; // x-axis scale
         MPPointF t = getTrans(mTouchPointCenter.x, mTouchPointCenter.y);
         boolean isZoomingOut = (scaleX < 1);
